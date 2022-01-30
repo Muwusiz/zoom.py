@@ -1,9 +1,11 @@
+# zoom.sh converted to work with linux by Musiz#1215
+# Example "Zoom" movie generation
+# e.g. py zoom.py "A painting of zooming in to a surreal, alien world" Zoom.png 180 25
+
 from sys import argv
 from random import randint
 from os import system
 from shutil import copyfile
-from PIL import Image
-from scipy import ndimage, misc
 
 TEXT = argv[1]
 FILENAME = argv[2]
@@ -20,20 +22,23 @@ FILENAME_NO_EXT = FILENAME.split('.')[0]
 FILE_EXTENSION = FILENAME.split('.')[1]
 
 # Initial run
-system(f'mkdir Zoom\{FILENAME_NO_EXT}')
+system(f'mkdir Zoom/{FILENAME_NO_EXT}')
 system(f'python generate.py -p="{TEXT}" -opt="{OPTIMISER}" -lr={LR} -i={MAX_ITERATIONS} -se={MAX_ITERATIONS} --seed={SEED} -o="Zoom/{FILENAME_NO_EXT}/{FILENAME}"')
 copyfile(f'Zoom/{FILENAME_NO_EXT}/{FILENAME}', f'Zoom/{FILENAME_NO_EXT}/{FILENAME_NO_EXT}-0000.{FILE_EXTENSION}')
 
 # Initial distort
 
-img = Image.open(f'Zoom/{FILENAME_NO_EXT}/{FILENAME}')
-width, height = img.size
-left = top = 4
-right = width - 4
-bottom = height - 4
-img = img.crop((left, top, right, bottom)) # crop image
-img = img.rotate(2) # rotate image
-img = img.save(f'Zoom/{FILENAME_NO_EXT}/{FILENAME}')
+# img = Image.open(f'Zoom/{FILENAME_NO_EXT}/{FILENAME}')
+# width, height = img.size
+# left = top = 4
+# right = width - 4
+# bottom = height - 4
+# img = img.crop((left, top, right, bottom)) # crop image
+# img = img.rotate(2) # rotate image
+# img = img.save(f'Zoom/{FILENAME_NO_EXT}/{FILENAME}')
+
+system(f'convert {FILENAME} -distort SRT 1.01,0 -gravity center {FILENAME}') # zoom
+system(f'convert {FILENAME} -distort SRT 1 -gravity center {FILENAME}') # rotate
 
 # Feedback image loop
 
@@ -42,14 +47,10 @@ for i in range(int(MAX_EPOCHS)):
     print(f'{spacer} {padded_count} {spacer}')
     system(f'python generate.py -p="{TEXT}" -opt="{OPTIMISER}" -lr={LR} -i={MAX_ITERATIONS} -se={MAX_ITERATIONS} --seed={SEED} -ii="Zoom/{FILENAME_NO_EXT}/{FILENAME}" -o="Zoom/{FILENAME_NO_EXT}/{FILENAME}"')
     copyfile(f'Zoom/{FILENAME_NO_EXT}/{FILENAME}', f'Zoom/{FILENAME_NO_EXT}/{FILENAME_NO_EXT}-{padded_count}.{FILE_EXTENSION}')
-    img = Image.open(f'Zoom/{FILENAME_NO_EXT}/{FILENAME}')
-    width, height = img.size
-    left = top = 4
-    right = width - 4
-    bottom = height - 4
-    img = img.crop((left, top, right, bottom)) # crop image
-    img = img.rotate(2) # rotate image
-    img = img.save(f'Zoom/{FILENAME_NO_EXT}/{FILENAME}')
+
+    system(f'convert Zoom/{FILENAME_NO_EXT}/{FILENAME} -distort SRT 1.01,0 -gravity center Zoom/{FILENAME_NO_EXT}/{FILENAME}') # zoom
+    system(f'convert Zoom/{FILENAME_NO_EXT}/{FILENAME} -distort SRT 1 -gravity center Zoom/{FILENAME_NO_EXT}/{FILENAME}') # rotate
+
 
 # convert to mp4 with ffmpeg
 
