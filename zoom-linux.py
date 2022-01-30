@@ -37,8 +37,8 @@ copyfile(f'Zoom/{FILENAME_NO_EXT}/{FILENAME}', f'Zoom/{FILENAME_NO_EXT}/{FILENAM
 # img = img.rotate(2) # rotate image
 # img = img.save(f'Zoom/{FILENAME_NO_EXT}/{FILENAME}')
 
-system(f'convert {FILENAME} -distort SRT 1.01,0 -gravity center {FILENAME}') # zoom
-system(f'convert {FILENAME} -distort SRT 1 -gravity center {FILENAME}') # rotate
+system(f'convert Zoom/{FILENAME_NO_EXT}/{FILENAME} -distort SRT 1.01,0 -gravity center Zoom/{FILENAME_NO_EXT}/{FILENAME}') # zoom
+system(f'convert Zoom/{FILENAME_NO_EXT}/{FILENAME} -distort SRT 1 -gravity center Zoom/{FILENAME_NO_EXT}/{FILENAME}') # rotate
 
 # Feedback image loop
 
