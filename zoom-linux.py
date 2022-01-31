@@ -6,6 +6,8 @@ from sys import argv
 from random import randint
 from os import system
 from shutil import copyfile
+import requests
+import subprocess
 
 TEXT = argv[1]
 FILENAME = argv[2]
@@ -13,6 +15,8 @@ MAX_EPOCHS = argv[3]
 MAX_ITERATIONS = argv[4]
 padded_count = 0
 spacer = "###############"
+
+url = "PUT DISCORD WEBHOOK URL HERE!!! PUT DISCORD WEBHOOK URL HERE!!! PUT DISCORD WEBHOOK URL HERE!!!"
 
 LR = 0.1
 OPTIMISER = "Adam"
@@ -51,7 +55,19 @@ for i in range(int(MAX_EPOCHS)):
     system(f'convert Zoom/{FILENAME_NO_EXT}/{FILENAME} -distort SRT 1.01,0 -gravity center Zoom/{FILENAME_NO_EXT}/{FILENAME}') # zoom
     system(f'convert Zoom/{FILENAME_NO_EXT}/{FILENAME} -distort SRT 1 -gravity center Zoom/{FILENAME_NO_EXT}/{FILENAME}') # rotate
 
+# zip and upload to https://transfer.sh
 
+system(f'zip {FILENAME_NO_EXT}.zip Zoom/{FILENAME_NO_EXT}/*')
+
+link = subprocess.check_output([f'curl --upload-file Zoom/{FILENAME_NO_EXT}/{FILENAME_NO_EXT}.zip https://transfer.sh/{FILENAME_NO_EXT}'])
+
+# send data over webhook
+
+data = {
+    "content" : link,
+    "username" : "VQGAN+CLIP VPS RETURN"
+}
+result = requests.post(url, json = data)
 # convert to mp4 with ffmpeg
 
-system(f'ffmpeg -r 24 -f image2 -i Zoom/{FILENAME_NO_EXT}/{FILENAME_NO_EXT}-%d.png -vcodec libx264 -crf 25  -pix_fmt yuv420p output/{FILENAME_NO_EXT}.mp4')
+# system(f'ffmpeg -r 24 -f image2 -i Zoom/{FILENAME_NO_EXT}/{FILENAME_NO_EXT}-%d.png -vcodec libx264 -crf 25  -pix_fmt yuv420p output/{FILENAME_NO_EXT}.mp4')
